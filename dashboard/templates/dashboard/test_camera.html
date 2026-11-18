@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ar">
+
+<head>
+    <meta charset="UTF-8">
+    <title>اختبار كاميرا اللابتوب</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial;
+        }
+
+        video {
+            width: 480px;
+            height: 360px;
+            border: 2px solid #333;
+            margin-top: 20px;
+        }
+
+        .status {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #007700;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>اختبار تشغيل كاميرا اللابتوب على المتصفح</h2>
+    <video id="video" autoplay playsinline></video>
+    <div class="status" id="status"></div>
+    <script>
+        const video = document.getElementById('video');
+        const statusDiv = document.getElementById('status');
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function (stream) {
+                    video.srcObject = stream;
+                    statusDiv.textContent = "✅ الكاميرا تعمل بنجاح!";
+                })
+                .catch(function (err) {
+                    statusDiv.textContent = "❌ لم يتم العثور على كاميرا أو تم رفض الإذن: " + err.name;
+                    statusDiv.style.color = "#bb0000";
+                });
+        } else {
+            statusDiv.textContent = "❌ المتصفح لا يدعم تشغيل الكاميرا.";
+            statusDiv.style.color = "#bb0000";
+        }
+    </script>
+</body>
+
+</html>

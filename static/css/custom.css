@@ -1,0 +1,765 @@
+/* General Body and HTML Styles */
+body {
+    font-family: 'Arial', sans-serif; /* A clean, widely available font */
+    background-color: #1E1E1E; /* Deep Charcoal for main background */
+    color: #E0E0E0; /* Light gray text */
+    margin: 0;
+    padding: 0;
+    direction: rtl; /* For Right-to-Left language support */
+    text-align: right;
+    overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+/* Dashboard Wrapper - main container for sidebar and content */
+.dashboard-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    width: 250px;
+    background-color: #2C2C2C; /* Darker gray for sidebar */
+    padding: 20px;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.4); /* More pronounced shadow */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.sidebar-logo {
+    font-size: 26px;
+    font-weight: bold;
+    color: #00BFFF; /* Electric Blue logo */
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #444; /* Slightly lighter border */
+}
+
+.sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-nav li {
+    margin-bottom: 10px;
+}
+
+.sidebar-nav a {
+    color: #E0E0E0;
+    text-decoration: none;
+    padding: 12px 15px; /* Slightly more padding */
+    display: block;
+    border-radius: 8px; /* More rounded corners */
+    transition: background-color 0.3s ease, color 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar-nav a i {
+    margin-left: 12px; /* Space for icon in RTL */
+    font-size: 20px;
+    color: #00BFFF; /* Electric Blue icons */
+}
+
+.sidebar-nav a:hover,
+.sidebar-nav li.active a {
+    background-color: #3A3A3A; /* Even darker gray on hover/active */
+    color: #00BFFF; /* Electric Blue text on hover/active */
+}
+
+.sidebar-nav li.active a i {
+    color: #00BFFF; /* Ensure active icon is Electric Blue */
+}
+
+.sidebar-footer {
+    margin-top: auto; /* Push to the bottom */
+    padding-top: 20px;
+    border-top: 1px solid #444;
+    text-align: center;
+}
+
+.logout-btn {
+    background: none;
+    border: none;
+    color: #E0E0E0;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.logout-btn i {
+    margin-left: 8px; /* Space for icon in RTL */
+    font-size: 18px;
+}
+
+.logout-btn:hover {
+    background-color: #FF6347; /* Red for logout on hover */
+    color: #fff;
+}
+
+/* Main Content Area */
+.main-content {
+    flex-grow: 1;
+    padding: 30px; /* More padding */
+    background-color: #1E1E1E; /* Main background color */
+}
+
+/* Top Header */
+.top-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #2C2C2C; /* Header background */
+    padding: 20px 25px; /* More padding */
+    border-radius: 10px; /* More rounded */
+    margin-bottom: 30px; /* More space */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* More pronounced shadow */
+}
+
+.top-header h2 {
+    margin: 0;
+    color: #00BFFF; /* Electric Blue heading */
+    font-size: 28px; /* Larger font size */
+}
+
+.header-left, .header-right {
+    display: flex;
+    align-items: center;
+}
+
+.connected-cameras-text {
+    font-size: 18px;
+    color: #E0E0E0;
+    margin-left: 20px; /* Space for RTL */
+}
+
+.refresh-btn {
+    background-color: #444; /* Darker gray for refresh button */
+    color: #fff;
+    border: none;
+    padding: 10px 20px; /* More padding */
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s ease;
+}
+
+.refresh-btn i {
+    margin-left: 8px; /* Space for icon in RTL */
+}
+
+.refresh-btn:hover {
+    background-color: #555; /* Slightly lighter gray on hover */
+}
+
+/* Content Section - general container for page content */
+.content-section {
+    background-color: #2C2C2C; /* Content background, same as sidebar */
+    padding: 30px; /* More padding */
+    border-radius: 10px; /* More rounded */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* More pronounced shadow */
+}
+
+/* Form Styles - general */
+.form-label {
+    color: #E0E0E0;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 8px; /* More space */
+    text-align: right;
+}
+
+.form-control {
+    background-color: #3A3A3A; /* Darker input background */
+    border: 1px solid #555;
+    color: #E0E0E0;
+    padding: 10px 15px; /* More padding */
+    border-radius: 6px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-control:focus {
+    border-color: #00BFFF; /* Electric Blue border on focus */
+    box-shadow: 0 0 0 0.2rem rgba(0, 191, 255, 0.25); /* Electric Blue shadow */
+    outline: none;
+}
+
+.form-text {
+    color: #A0A0A0; /* Muted text color */
+    font-size: 0.9em;
+    margin-top: 5px;
+    text-align: right;
+}
+
+.btn-primary {
+    background-color: #00BFFF; /* Electric Blue button */
+    border-color: #00BFFF;
+    color: #1E1E1E; /* Dark text for contrast */
+    padding: 12px 25px; /* More padding */
+    border-radius: 8px;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    cursor: pointer;
+}
+
+.btn-primary:hover {
+    background-color: #00A3D9; /* Slightly darker Electric Blue on hover */
+    border-color: #00A3D9;
+    transform: translateY(-2px); /* Slight lift effect */
+}
+
+/* Messages (Django messages) */
+.messages .alert {
+    background-color: #3A3A3A; /* Darker background for alerts */
+    color: #E0E0E0;
+    border: 1px solid #555;
+    border-radius: 8px;
+    padding: 18px; /* More padding */
+    margin-bottom: 25px; /* More space */
+    text-align: right;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.messages .alert-success {
+    background-color: #3CB371; /* Green for success */
+    border-color: #2E8B57;
+}
+
+.messages .alert-info {
+    background-color: #17A2B8; /* Blue for info */
+    border-color: #138496;
+}
+
+.messages .alert-warning {
+    background-color: #FFD700; /* Gold for warning */
+    border-color: #E0B400;
+    color: #333; /* Dark text for warning */
+}
+
+.messages .alert-danger {
+    background-color: #FF6347; /* Tomato Red for danger */
+    border-color: #E55347;
+}
+
+/* Card Styles - general (for alerts, KPIs, etc.) */
+.card-body {
+    padding: 20px;
+}
+
+/* Alerts List specific styles */
+.alerts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Larger min width */
+    gap: 25px; /* More space between cards */
+    margin-top: 25px;
+}
+
+.alert-card {
+    background-color: #2C2C2C; /* Card background */
+    border-radius: 10px; /* More rounded */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* More pronounced shadow */
+    padding: 20px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative; /* For badge positioning */
+}
+
+.alert-card:hover {
+    transform: translateY(-5px); /* More pronounced lift */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+}
+
+.alert-card h3 {
+    color: #00BFFF; /* Electric Blue heading */
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1.3em;
+}
+
+.alert-card p {
+    margin-bottom: 8px;
+    color: #E0E0E0;
+}
+
+.alert-description {
+    font-weight: bold;
+    color: #f1f1f1;
+    font-size: 1.1em;
+}
+
+.alert-time {
+    font-size: 0.85em;
+    color: #A0A0A0; /* Muted text color */
+}
+
+.alert-card .mark-read-btn {
+    background-color: #00BFFF;
+    color: #1E1E1E;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s ease;
+    margin-top: 15px;
+}
+
+.alert-card .mark-read-btn:hover {
+    background-color: #00A3D9;
+}
+
+.alert-card.unread {
+    border-right: 5px solid #FF6347; /* Red border for unread */
+}
+
+.alert-card.read {
+    border-right: 5px solid #3CB371; /* Green border for read */
+    opacity: 0.8; /* Slightly dim read alerts */
+}
+
+.badge {
+    padding: 0.4em 0.8em;
+    border-radius: 0.3rem;
+    font-size: 0.8em;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    display: inline-block;
+    position: absolute;
+    top: 15px;
+    left: 15px; /* Position badge on the left for RTL */
+}
+
+.badge.bg-high {
+    background-color: #FF6347; /* Red */
+    color: #fff;
+}
+.badge.bg-medium {
+    background-color: #FFD700; /* Gold */
+    color: #333;
+}
+.badge.bg-low {
+    background-color: #3CB371; /* Green */
+    color: #fff;
+}
+
+/* Specific styles for notification_settings.html toggle switches */
+.toggle-switch-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    position: relative;
+    padding: 10px 0; /* Add some padding around each toggle row */
+    border-bottom: 1px solid #3A3A3A; /* Separator for items */
+}
+.toggle-switch-container:last-of-type {
+    border-bottom: none; /* No border for the last item */
+}
+
+.toggle-label {
+    flex-grow: 1;
+    margin-left: 15px; /* More space for label in RTL */
+    font-weight: bold;
+    color: #E0E0E0;
+    cursor: pointer;
+    font-size: 1.1em;
+}
+
+.toggle-switch-container input[type="checkbox"] {
+    height: 0;
+    width: 0;
+    visibility: hidden;
+    position: absolute; /* Hide the actual checkbox */
+}
+
+.toggle-switch-container .slider {
+    cursor: pointer;
+    width: 60px; /* Wider toggle */
+    height: 30px; /* Taller toggle */
+    background: #444; /* Dark gray for off state */
+    border-radius: 30px; /* Fully rounded */
+    position: relative;
+    transition: background-color 0.3s ease-in-out;
+    flex-shrink: 0;
+}
+
+.toggle-switch-container .slider:before {
+    content: '';
+    position: absolute;
+    width: 26px; /* Larger circle */
+    height: 26px;
+    border-radius: 50%;
+    background-color: #f1f1f1;
+    top: 2px;
+    right: 2px; /* Adjusted for RTL */
+    transition: transform 0.3s ease-in-out;
+}
+
+.toggle-switch-container input:checked + .slider {
+    background-color: #00BFFF; /* Electric Blue when on */
+}
+
+.toggle-switch-container input:checked + .slider:before {
+    transform: translateX(-30px); /* Move circle to the left for RTL */
+}
+
+.setting-description {
+    color: #A0A0A0; /* Muted text color */
+    font-size: 0.9em;
+    margin-top: 5px; /* Space between label/toggle and description */
+    margin-right: auto; /* Push description to the left */
+}
+
+/* Settings card specific styles for notification_settings.html */
+.settings-card {
+    background-color: #2C2C2C;
+    padding: 30px; /* More padding */
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    margin-bottom: 30px;
+}
+
+.settings-card h3 {
+    color: #00BFFF;
+    margin-bottom: 25px; /* More space */
+    text-align: right;
+    padding-right: 15px; /* More padding */
+    border-right: 4px solid #00BFFF; /* Thicker, Electric Blue border */
+}
+
+/* Adjustments for specific form elements in notification_settings */
+.settings-card .form-label {
+    margin-bottom: 10px;
+}
+
+.settings-card .form-control {
+    background-color: #3A3A3A;
+    border: 1px solid #555;
+    color: #E0E0E0;
+}
+
+.settings-card .form-text {
+    color: #A0A0A0;
+}
+
+.settings-form .btn-primary {
+    margin-left: auto; /* Push button to the right */
+    margin-right: 0;
+    display: block;
+    width: fit-content;
+}
+
+/* Camera feed section (dashboard.html) */
+.main-camera-section {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.main-camera-section h3 {
+    color: #00BFFF;
+    margin-bottom: 20px;
+    font-size: 1.5em;
+}
+
+.camera-feed-container {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+    height: 0;
+    background-color: #000;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+}
+
+.camera-feed-container img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Ensure the whole frame is visible */
+}
+
+.camera-controls {
+    position: absolute;
+    top: 15px; /* More space from top */
+    left: 15px; /* Position controls on the left for RTL video feed */
+    display: flex;
+    gap: 15px; /* More space between buttons */
+    z-index: 10;
+}
+
+.control-btn {
+    background-color: rgba(0, 0, 0, 0.7); /* Slightly darker overlay */
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 45px; /* Larger buttons */
+    height: 45px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-size: 1.2em;
+}
+
+.control-btn:hover {
+    background-color: rgba(0, 0, 0, 0.9);
+    transform: scale(1.1); /* Slight enlarge effect */
+}
+
+.camera-status-indicator {
+    background-color: #3CB371; /* Green for "on" */
+    color: #fff;
+    padding: 10px 20px; /* More padding */
+    border-radius: 8px;
+    position: fixed;
+    bottom: 25px; /* More space from bottom */
+    right: 25px; /* Position bottom-right for RTL */
+    z-index: 100;
+    font-size: 1em;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.camera-status-indicator i {
+    margin-left: 10px; /* Space for icon in RTL */
+}
+
+/* Styles for the analytics page (if it uses the same structure) */
+.chart-container {
+    background-color: #2C2C2C;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    margin-bottom: 30px;
+}
+
+.chart-container h3 {
+    color: #00BFFF;
+    margin-bottom: 25px;
+    text-align: right;
+    padding-right: 15px;
+    border-right: 4px solid #00BFFF;
+    font-size: 1.4em;
+}
+
+.kpi-card {
+    background-color: #2C2C2C;
+    padding: 25px; /* More padding */
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.kpi-card h4 {
+    color: #E0E0E0;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+}
+
+.kpi-value {
+    color: #00BFFF; /* Electric Blue for KPI values */
+    font-size: 3em; /* Larger font */
+    font-weight: bold;
+    display: block; /* Ensure it takes its own line */
+    margin-top: 10px;
+}
+
+/* Filters section for analytics */
+.filters-section {
+    background-color: #2C2C2C;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    margin-bottom: 30px;
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    gap: 20px; /* Space between filter elements */
+    align-items: flex-end; /* Align items to the bottom */
+}
+
+.filters-section .filter-group {
+    flex: 1; /* Allow groups to grow */
+    min-width: 200px; /* Minimum width for each filter group */
+}
+
+.filters-section .form-label {
+    margin-bottom: 8px;
+    font-size: 1em;
+}
+
+.filters-section .form-select,
+.filters-section .form-control {
+    background-color: #3A3A3A;
+    border: 1px solid #555;
+    color: #E0E0E0;
+    padding: 8px 12px;
+    border-radius: 6px;
+    width: 100%;
+}
+.filters-section .form-select option {
+    background-color: #3A3A3A; /* Background for dropdown options */
+    color: #E0E0E0;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 992px) { /* Adjust breakpoint for larger tablets */
+    .main-content {
+        padding: 20px;
+    }
+    .top-header {
+        padding: 15px 20px;
+        margin-bottom: 20px;
+    }
+    .top-header h2 {
+        font-size: 24px;
+    }
+    .connected-cameras-text {
+        font-size: 16px;
+    }
+    .refresh-btn {
+        padding: 8px 15px;
+    }
+    .content-section {
+        padding: 20px;
+    }
+    .settings-card, .chart-container, .kpi-card, .filters-section {
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    .settings-card h3, .chart-container h3 {
+        font-size: 1.3em;
+        margin-bottom: 20px;
+    }
+    .toggle-switch-container .slider {
+        width: 55px;
+        height: 28px;
+    }
+    .toggle-switch-container .slider:before {
+        width: 24px;
+        height: 24px;
+    }
+    .toggle-switch-container input:checked + .slider:before {
+        transform: translateX(-27px);
+    }
+    .kpi-value {
+        font-size: 2.5em;
+    }
+    .filters-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .filters-section .filter-group {
+        min-width: unset;
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) { /* Phones and small tablets */
+    .dashboard-wrapper {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        padding: 15px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+
+    .sidebar-nav ul {
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+    }
+
+    .sidebar-nav li {
+        margin-bottom: 5px;
+        width: 48%; /* Two items per row */
+    }
+
+    .sidebar-nav a {
+        padding: 8px 10px;
+        font-size: 14px;
+        justify-content: center; /* Center text and icon */
+        flex-direction: column; /* Stack icon and text */
+    }
+
+    .sidebar-nav a i {
+        margin: 0 0 5px 0; /* Space below icon */
+    }
+
+    .sidebar-logo {
+        margin-bottom: 15px;
+        font-size: 20px;
+    }
+
+    .sidebar-footer {
+        padding-top: 15px;
+    }
+
+    .main-content {
+        padding: 15px;
+    }
+
+    .top-header {
+        flex-direction: column;
+        align-items: flex-end; /* Align right for RTL */
+        padding: 10px 15px;
+    }
+
+    .top-header h2 {
+        font-size: 22px;
+        margin-bottom: 10px;
+    }
+
+    .header-left {
+        flex-direction: column;
+        align-items: flex-end; /* Align right for RTL */
+    }
+
+    .connected-cameras-text {
+        font-size: 16px;
+        margin-bottom: 10px;
+        margin-left: 0; /* Remove left margin */
+    }
+
+    .refresh-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .camera-status-indicator {
+        bottom: 15px;
+        right: 15px;
+        padding: 8px 15px;
+        font-size: 0.8em;
+    }
+
+    .alerts-grid {
+        grid-template-columns: 1fr; /* Stack alerts on small screens */
+    }
+
+    .control-btn {
+        width: 38px; /* Smaller buttons */
+        height: 38px;
+        font-size: 1em;
+    }
+}

@@ -1,0 +1,472 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}الإعدادات - نظام المراقبة الأمني{% endblock %}
+
+{% block extra_css %}
+<style>
+    .settings-container {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 4px 20px rgba(80, 80, 180, 0.08);
+        border: 1px solid #e0e7ff;
+    }
+
+    .settings-section {
+        margin-bottom: 2.5rem;
+    }
+
+    .settings-section:last-child {
+        margin-bottom: 0;
+    }
+
+    .settings-section h3 {
+        color: var(--primary-color);
+        font-size: 1.4rem;
+        margin-bottom: 1.5rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .settings-section h3 i {
+        color: var(--accent-color);
+    }
+
+    .settings-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .settings-card {
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 1px solid #e0e7ff;
+        transition: all 0.3s ease;
+    }
+
+    .settings-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(80, 80, 180, 0.1);
+    }
+
+    .settings-card h4 {
+        color: var(--primary-color);
+        font-size: 1.1rem;
+        margin: 0 0 1rem 0;
+        font-weight: 600;
+    }
+
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+
+    .form-group:last-child {
+        margin-bottom: 0;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #4b5563;
+        font-weight: 500;
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="email"],
+    .form-group input[type="password"],
+    .form-group select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #e0e7ff;
+        border-radius: 8px;
+        background: white;
+        color: #4b5563;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-group input[type="text"]:focus,
+    .form-group input[type="email"]:focus,
+    .form-group input[type="password"]:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    .form-group .help-text {
+        font-size: 0.85rem;
+        color: #6b7280;
+        margin-top: 0.5rem;
+    }
+
+    .form-group .error-text {
+        font-size: 0.85rem;
+        color: #ef4444;
+        margin-top: 0.5rem;
+    }
+
+    .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 3.5rem;
+        height: 2rem;
+    }
+
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #e5e7eb;
+        transition: .4s;
+        border-radius: 2rem;
+    }
+
+    .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 1.5rem;
+        width: 1.5rem;
+        left: 0.25rem;
+        bottom: 0.25rem;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+
+    input:checked+.toggle-slider {
+        background-color: var(--accent-color);
+    }
+
+    input:checked+.toggle-slider:before {
+        transform: translateX(1.5rem);
+    }
+
+    .settings-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .settings-btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .settings-btn.primary {
+        background: linear-gradient(120deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        border: none;
+    }
+
+    .settings-btn.secondary {
+        background: white;
+        color: var(--primary-color);
+        border: 1px solid #e0e7ff;
+    }
+
+    .settings-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(80, 80, 180, 0.15);
+    }
+
+    .settings-btn.primary:hover {
+        background: linear-gradient(120deg, var(--secondary-color), var(--primary-color));
+    }
+
+    .settings-btn.secondary:hover {
+        background: #f8fafc;
+    }
+
+    .settings-btn i {
+        font-size: 1.1rem;
+    }
+
+    @media (max-width: 768px) {
+        .settings-container {
+            padding: 1rem;
+        }
+
+        .settings-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .settings-actions {
+            flex-direction: column;
+        }
+
+        .settings-btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="header">
+    <h2>الإعدادات</h2>
+</div>
+
+<div class="settings-container">
+    <form method="post" id="settings-form">
+        {% csrf_token %}
+
+        <div class="settings-section">
+            <h3>
+                <i class="fas fa-user-cog"></i>
+                إعدادات الحساب
+            </h3>
+            <div class="settings-grid">
+                <div class="settings-card">
+                    <h4>المعلومات الشخصية</h4>
+                    <div class="form-group">
+                        <label for="id_username">اسم المستخدم</label>
+                        <input type="text" name="username" id="id_username" value="{{ user.username }}" required>
+                        {% if form.username.errors %}
+                        <div class="error-text">{{ form.username.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="id_email">البريد الإلكتروني</label>
+                        <input type="email" name="email" id="id_email" value="{{ user.email }}" required>
+                        {% if form.email.errors %}
+                        <div class="error-text">{{ form.email.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <h4>تغيير كلمة المرور</h4>
+                    <div class="form-group">
+                        <label for="id_old_password">كلمة المرور الحالية</label>
+                        <input type="password" name="old_password" id="id_old_password">
+                        {% if form.old_password.errors %}
+                        <div class="error-text">{{ form.old_password.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="id_new_password1">كلمة المرور الجديدة</label>
+                        <input type="password" name="new_password1" id="id_new_password1">
+                        {% if form.new_password1.errors %}
+                        <div class="error-text">{{ form.new_password1.errors.0 }}</div>
+                        {% endif %}
+                        <div class="help-text">
+                            يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل وتتضمن أحرف كبيرة وصغيرة وأرقام ورموز خاصة.
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_new_password2">تأكيد كلمة المرور الجديدة</label>
+                        <input type="password" name="new_password2" id="id_new_password2">
+                        {% if form.new_password2.errors %}
+                        <div class="error-text">{{ form.new_password2.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <h3>
+                <i class="fas fa-bell"></i>
+                إعدادات التنبيهات
+            </h3>
+            <div class="settings-grid">
+                <div class="settings-card">
+                    <h4>إعدادات الإشعارات</h4>
+                    <div class="form-group">
+                        <label class="toggle-label">
+                            <span>تفعيل الإشعارات البريدية</span>
+                            <div class="toggle-switch">
+                                <input type="checkbox" name="email_notifications" id="id_email_notifications" {% if user.profile.email_notifications %}checked{% endif %}>
+                                <span class="toggle-slider"></span>
+                            </div>
+                        </label>
+                        <div class="help-text">
+                            سيتم إرسال إشعارات بالبريد الإلكتروني عند حدوث تنبيهات جديدة.
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_notification_frequency">تكرار الإشعارات</label>
+                        <select name="notification_frequency" id="id_notification_frequency">
+                            <option value="immediate" {% if user.profile.notification_frequency == 'immediate' %}selected{% endif %}>فوري</option>
+                            <option value="daily" {% if user.profile.notification_frequency == 'daily' %}selected{% endif %}>يومي</option>
+                            <option value="weekly" {% if user.profile.notification_frequency == 'weekly' %}selected{% endif %}>أسبوعي</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <h4>إعدادات التنبيهات</h4>
+                    <div class="form-group">
+                        <label class="toggle-label">
+                            <span>تفعيل تنبيهات الحركة</span>
+                            <div class="toggle-switch">
+                                <input type="checkbox" name="motion_alerts" id="id_motion_alerts" {% if user.profile.motion_alerts %}checked{% endif %}>
+                                <span class="toggle-slider"></span>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="toggle-label">
+                            <span>تفعيل تنبيهات الصوت</span>
+                            <div class="toggle-switch">
+                                <input type="checkbox" name="sound_alerts" id="id_sound_alerts" {% if user.profile.sound_alerts %}checked{% endif %}>
+                                <span class="toggle-slider"></span>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_alert_sensitivity">حساسية التنبيهات</label>
+                        <select name="alert_sensitivity" id="id_alert_sensitivity">
+                            <option value="high" {% if user.profile.alert_sensitivity == 'high' %}selected{% endif %}>عالية</option>
+                            <option value="medium" {% if user.profile.alert_sensitivity == 'medium' %}selected{% endif %}>متوسطة</option>
+                            <option value="low" {% if user.profile.alert_sensitivity == 'low' %}selected{% endif %}>منخفضة</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <h3>
+                <i class="fas fa-video"></i>
+                إعدادات الكاميرات
+            </h3>
+            <div class="settings-grid">
+                <div class="settings-card">
+                    <h4>إعدادات التسجيل</h4>
+                    <div class="form-group">
+                        <label class="toggle-label">
+                            <span>تفعيل التسجيل التلقائي</span>
+                            <div class="toggle-switch">
+                                <input type="checkbox" name="auto_recording" id="id_auto_recording" {% if user.profile.auto_recording %}checked{% endif %}>
+                                <span class="toggle-slider"></span>
+                            </div>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_recording_quality">جودة التسجيل</label>
+                        <select name="recording_quality" id="id_recording_quality">
+                            <option value="high" {% if user.profile.recording_quality == 'high' %}selected{% endif %}>عالية</option>
+                            <option value="medium" {% if user.profile.recording_quality == 'medium' %}selected{% endif %}>متوسطة</option>
+                            <option value="low" {% if user.profile.recording_quality == 'low' %}selected{% endif %}>منخفضة</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_storage_duration">مدة التخزين (بالأيام)</label>
+                        <input type="number" name="storage_duration" id="id_storage_duration" value="{{ user.profile.storage_duration }}" min="1" max="365">
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <h4>إعدادات العرض</h4>
+                    <div class="form-group">
+                        <label for="id_display_mode">وضع العرض</label>
+                        <select name="display_mode" id="id_display_mode">
+                            <option value="grid" {% if user.profile.display_mode == 'grid' %}selected{% endif %}>شبكة</option>
+                            <option value="list" {% if user.profile.display_mode == 'list' %}selected{% endif %}>قائمة</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_refresh_interval">فترة التحديث (بالثواني)</label>
+                        <input type="number" name="refresh_interval" id="id_refresh_interval" value="{{ user.profile.refresh_interval }}" min="1" max="60">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-actions">
+            <button type="button" class="settings-btn secondary" onclick="resetForm()">
+                <i class="fas fa-undo"></i>
+                إعادة تعيين
+            </button>
+            <button type="submit" class="settings-btn primary">
+                <i class="fas fa-save"></i>
+                حفظ التغييرات
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function resetForm() {
+        if (confirm('هل أنت متأكد من إعادة تعيين جميع الإعدادات؟')) {
+            document.getElementById('settings-form').reset();
+        }
+    }
+
+    document.getElementById('settings-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const data = {};
+        formData.forEach((value, key) => {
+            if (key.endsWith('[]')) {
+                const baseKey = key.slice(0, -2);
+                if (!data[baseKey]) {
+                    data[baseKey] = [];
+                }
+                data[baseKey].push(value);
+            } else {
+                data[key] = value;
+            }
+        });
+
+        fetch(window.location.href, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('تم حفظ الإعدادات بنجاح');
+                    window.location.reload();
+                } else {
+                    if (data.errors) {
+                        Object.entries(data.errors).forEach(([field, errors]) => {
+                            const input = document.getElementById(`id_${field}`);
+                            if (input) {
+                                const errorDiv = document.createElement('div');
+                                errorDiv.className = 'error-text';
+                                errorDiv.textContent = errors[0];
+                                input.parentNode.appendChild(errorDiv);
+                            }
+                        });
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('حدث خطأ أثناء حفظ الإعدادات. يرجى المحاولة مرة أخرى.');
+            });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,182 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}إعدادات الإشعارات{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">إعدادات الإشعارات</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Email Notifications -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">
+                                <i class="fas fa-envelope text-primary me-2"></i>
+                                إشعارات البريد الإلكتروني
+                            </h5>
+                            <div class="form-check form-switch">
+                                {{ form.email_notifications }}
+                                <label class="form-check-label" for="{{ form.email_notifications.id_for_label }}">
+                                    تفعيل إشعارات البريد الإلكتروني
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Telegram Notifications -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">
+                                <i class="fab fa-telegram text-info me-2"></i>
+                                إشعارات تيليجرام
+                            </h5>
+                            <div class="form-check form-switch mb-3">
+                                {{ form.telegram_notifications }}
+                                <label class="form-check-label" for="{{ form.telegram_notifications.id_for_label }}">
+                                    تفعيل إشعارات تيليجرام
+                                </label>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="{{ form.telegram_username.id_for_label }}">اسم المستخدم في
+                                            تيليجرام</label>
+                                        {{ form.telegram_username }}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="{{ form.telegram_chat_id.id_for_label }}">معرف المحادثة</label>
+                                        {{ form.telegram_chat_id }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- WhatsApp Notifications -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">
+                                <i class="fab fa-whatsapp text-success me-2"></i>
+                                إشعارات واتساب
+                            </h5>
+                            <div class="form-check form-switch mb-3">
+                                {{ form.whatsapp_notifications }}
+                                <label class="form-check-label" for="{{ form.whatsapp_notifications.id_for_label }}">
+                                    تفعيل إشعارات واتساب
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ form.whatsapp_number.id_for_label }}">رقم واتساب</label>
+                                {{ form.whatsapp_number }}
+                            </div>
+                        </div>
+
+                        <!-- General Settings -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">
+                                <i class="fas fa-cog text-secondary me-2"></i>
+                                إعدادات عامة
+                            </h5>
+                            <div class="form-group mt-3">
+                                <label for="{{ form.notification_interval.id_for_label }}">فاصل الإشعارات
+                                    (بالدقائق)</label>
+                                {{ form.notification_interval }}
+                            </div>
+                        </div>
+
+                        <!-- Test Buttons -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">
+                                <i class="fas fa-vial text-warning me-2"></i>
+                                اختبار الإشعارات
+                            </h5>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-outline-primary" onclick="testEmail()">
+                                    <i class="fas fa-envelope me-1"></i>
+                                    اختبار البريد الإلكتروني
+                                </button>
+                                <button type="button" class="btn btn-outline-info" onclick="testTelegram()">
+                                    <i class="fab fa-telegram me-1"></i>
+                                    اختبار تيليجرام
+                                </button>
+                                <button type="button" class="btn btn-outline-success" onclick="testWhatsApp()">
+                                    <i class="fab fa-whatsapp me-1"></i>
+                                    اختبار واتساب
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Save Button -->
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save me-1"></i>
+                                حفظ الإعدادات
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    function testEmail() {
+        fetch('/test-email/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('تم إرسال بريد إلكتروني تجريبي بنجاح!');
+                } else {
+                    alert('حدث خطأ أثناء إرسال البريد الإلكتروني: ' + data.error);
+                }
+            });
+    }
+
+    function testTelegram() {
+        fetch('/test-telegram/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('تم إرسال رسالة تيليجرام تجريبية بنجاح!');
+                } else {
+                    alert('حدث خطأ أثناء إرسال رسالة تيليجرام: ' + data.error);
+                }
+            });
+    }
+
+    function testWhatsApp() {
+        fetch('/test-whatsapp/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('تم إرسال رسالة واتساب تجريبية بنجاح!');
+                } else {
+                    alert('حدث خطأ أثناء إرسال رسالة واتساب: ' + data.error);
+                }
+            });
+    }
+</script>
+{% endblock %}
+{% endblock %}

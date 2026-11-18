@@ -1,0 +1,317 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}لوحة التحكم - نظام الأمان الذكي{% endblock %}
+
+{% block content %}
+{% csrf_token %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>لوحة التحكم الرئيسية</h2>
+            <div>
+                <button onclick="window.location.reload();" class="btn btn-primary" title="تحديث الصفحة">
+                    <i class="fas fa-sync-alt me-1"></i>
+                    تحديث الصفحة
+                </button>
+                <button onclick="forceCameraScan();" class="btn btn-success ms-2" title="إعادة اكتشاف الكاميرات">
+                    <i class="fas fa-search me-1"></i>
+                    اكتشاف الكاميرات
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function getCsrfToken() {
+        const name = "csrftoken";
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+            const cookies = document.cookie.split(";");
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + "=")) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function forceCameraScan() {
+        fetch('{% url "dashboard:force_camera_scan" %}', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCsrfToken(),
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message || 'تمت إعادة اكتشاف الكاميرات');
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('حدث خطأ أثناء اكتشاف الكاميرات');
+            });
+    }
+</script>
+
+<!-- شبكة الكاميرات -->
+{% if cameras and cameras|length > 0 %}
+<div class="row">
+    {% for camera in cameras %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100 camera-card" data-camera-id="{{ camera.id }}">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">{{ camera.name }}</h6>
+                <span class="badge bg-{% if camera.is_active %}success{% else %}secondary{% endif %}">
+                    {% if camera.is_active %}نشط{% else %}غير نشط{% endif %}
+                </span>
+            </div>
+            <div class="card-body text-center">
+                {% if camera.is_active %}
+                <div class="camera-container">
+                    <img class="camera-feed" src="/video-feed/" alt="Live feed from {{ camera.name }}"
+                        data-camera-id="{{ camera.id }}" onerror="handleCameraError(this.dataset.cameraId)">
+                </div>
+                {% else %}
+                <div class="camera-offline">
+                    <i class="fas fa-video fa-3x text-muted"></i>
+                    <p class="text-muted mt-2 mb-0">الكاميرا غير نشطة</p>
+                </div>
+                {% endif %}
+                <div class="mt-3 d-flex justify-content-center gap-2">
+                    <button
+                        class="btn btn-sm btn-{% if camera.is_active %}warning{% else %}success{% endif %} camera-toggle-btn"
+                        data-camera-id="{{ camera.id }}" data-action="toggle">
+                        <i class="fas fa-{% if camera.is_active %}pause{% else %}play{% endif %} me-1"></i>
+                        {% if camera.is_active %}إيقاف{% else %}تشغيل{% endif %}
+                    </button>
+                    {% if camera.is_active %}
+                    <button class="btn btn-sm btn-info fullscreen-btn" data-camera-id="{{ camera.id }}"
+                        data-action="fullscreen">
+                        <i class="fas fa-expand me-1"></i> ملء الشاشة
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info">
+    <i class="fas fa-info-circle me-2"></i>
+    لا توجد كاميرات متصلة. قم بتحديث الصفحة للبحث عن كاميرات جديدة.
+</div>
+{% endif %}
+
+<style>
+    .camera-feed {
+        max-width: 100%;
+        max-height: 180px;
+        object-fit: contain;
+        border-radius: 8px;
+        background: #222;
+    }
+
+    .camera-card {
+        transition: all 0.3s ease;
+    }
+
+    .camera-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<!-- التنبيهات -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-bell me-2"></i>
+                    أحدث التنبيهات
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if recent_alerts %}
+                {% for alert in recent_alerts %}
+                <div class="alert-card alert-{{ alert.severity }} p-3 mb-3">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="mb-1">{{ alert.description }}</h6>
+                            <small class="text-muted">
+                                <i class="fas fa-video me-1"></i>
+                                {{ alert.camera.name|default:"كاميرا غير محددة" }} -
+                                {{ alert.timestamp|date:"Y-m-d H:i" }}
+                            </small>
+                        </div>
+                        <span class="badge bg-{{ alert.severity }}">
+                            {% if alert.severity == 'high' %}عالي
+                            {% elif alert.severity == 'medium' %}متوسط
+                            {% else %}منخفض{% endif %}
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
+                <div class="text-center">
+                    <a href="{% url 'dashboard:alerts' %}" class="btn btn-primary">
+                        عرض جميع التنبيهات
+                    </a>
+                </div>
+                {% else %}
+                <div class="text-center text-muted">
+                    <i class="fas fa-info-circle fa-3x mb-3"></i>
+                    <p>لا توجد تنبيهات حديثة</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<h3>بث الكاميرا من السيرفر</h3>
+<img src="/video-feed/" width="480" height="360" />
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // إضافة event listeners للأزرار
+        document.querySelectorAll('.camera-toggle-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const cameraId = this.dataset.cameraId;
+                toggleCamera(cameraId);
+            });
+        });
+
+        document.querySelectorAll('.fullscreen-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const cameraId = this.dataset.cameraId;
+                toggleFullscreen(cameraId);
+            });
+        });
+    });
+
+    function handleCameraError(cameraId) {
+        const card = document.querySelector(`.camera-card[data-camera-id="${cameraId}"]`);
+        if (!card) return;
+
+        const img = card.querySelector('.camera-feed');
+        if (img) {
+            img.style.display = 'none';
+            const container = img.parentElement;
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'alert alert-danger mt-3';
+            errorDiv.innerHTML = `
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>خطأ في الاتصال بالكاميرا</strong>
+            <p class="mb-0 mt-2">يرجى التأكد من توصيل الكاميرا بشكل صحيح</p>
+        `;
+            container.insertBefore(errorDiv, img.nextSibling);
+        }
+    }
+
+    function toggleCamera(cameraId) {
+        fetch(`{% url 'dashboard:toggle_camera' 0 %}`.replace('0', cameraId), {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCsrfToken(),
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status !== undefined) {
+                    location.reload();
+                } else {
+                    alert('حدث خطأ: ' + (data.error || 'خطأ غير معروف'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('حدث خطأ في الاتصال');
+            });
+    }
+
+    function toggleFullscreen(cameraId) {
+        const container = document.getElementById(`camera-container-${cameraId}`);
+        const img = document.getElementById(`cam-img-${cameraId}`);
+
+        if (!container || !img) return;
+
+        if (!document.fullscreenElement) {
+            // الدخول في وضع ملء الشاشة
+            container.style.position = 'fixed';
+            container.style.top = '0';
+            container.style.left = '0';
+            container.style.width = '100vw';
+            container.style.height = '100vh';
+            container.style.zIndex = '9999';
+            container.style.backgroundColor = '#000';
+            container.style.display = 'flex';
+            container.style.alignItems = 'center';
+            container.style.justifyContent = 'center';
+
+            img.style.maxWidth = '100%';
+            img.style.maxHeight = '100%';
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = 'contain';
+            img.style.borderRadius = '0';
+
+            // إضافة زر للخروج من وضع ملء الشاشة
+            const exitButton = document.createElement('button');
+            exitButton.className = 'btn btn-danger position-absolute';
+            exitButton.style.top = '20px';
+            exitButton.style.right = '20px';
+            exitButton.innerHTML = '<i class="fas fa-times"></i>';
+            exitButton.onclick = () => exitFullscreen(cameraId);
+            container.appendChild(exitButton);
+
+            document.body.style.overflow = 'hidden';
+        } else {
+            exitFullscreen(cameraId);
+        }
+    }
+
+    function exitFullscreen(cameraId) {
+        const container = document.getElementById(`camera-container-${cameraId}`);
+        const img = document.getElementById(`cam-img-${cameraId}`);
+
+        if (!container || !img) return;
+
+        // إعادة الخصائص إلى وضعها الطبيعي
+        container.style.position = '';
+        container.style.top = '';
+        container.style.left = '';
+        container.style.width = '';
+        container.style.height = '';
+        container.style.zIndex = '';
+        container.style.backgroundColor = '';
+        container.style.display = '';
+        container.style.alignItems = '';
+        container.style.justifyContent = '';
+
+        img.style.maxWidth = '100%';
+        img.style.maxHeight = '180px';
+        img.style.width = '';
+        img.style.height = '';
+        img.style.objectFit = 'contain';
+        img.style.borderRadius = '8px';
+
+        // إزالة زر الخروج
+        const exitButton = container.querySelector('.btn-danger');
+        if (exitButton) {
+            exitButton.remove();
+        }
+
+        document.body.style.overflow = '';
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,27 @@
+<!-- قسم التنبيهات -->
+<div class="alerts-section">
+    <h3>آخر التنبيهات</h3>
+    <div id="alertsList" class="alerts-list">
+        {% for alert in alerts %}
+        <div class="alert-card {% if not alert.is_read %}unread{% endif %}">
+            <div class="alert-header">
+                <h3>{{ alert.camera.name }}</h3>
+                {% if not alert.is_read %}
+                <button class="mark-read-btn" onclick="markAlertRead('{{ alert.id }}')">
+                    <i class="fas fa-check"></i>
+                </button>
+                {% endif %}
+            </div>
+            <div class="alert-content">
+                <p>{{ alert.description }}</p>
+                <div class="alert-meta">
+                    <span class="alert-severity {{ alert.severity }}">{{ alert.get_severity_display }}</span>
+                    <span class="alert-time">{{ alert.timestamp|date:"Y-m-d H:i:s" }}</span>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="no-alerts">لا توجد تنبيهات حديثة</p>
+        {% endfor %}
+    </div>
+</div> 

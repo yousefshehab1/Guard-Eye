@@ -1,0 +1,254 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}التنبيهات - نظام المراقبة الأمني{% endblock %}
+
+{% block extra_css %}
+<style>
+    .alerts-container {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 4px 20px rgba(80, 80, 180, 0.08);
+        border: 1px solid #e0e7ff;
+    }
+
+    .alerts-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        background: #f8fafc;
+        border-radius: 12px;
+        border: 1px solid #e0e7ff;
+    }
+
+    .filter-group {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .filter-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: var(--primary-color);
+        font-weight: 600;
+    }
+
+    .filter-group select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #e0e7ff;
+        border-radius: 8px;
+        background: white;
+        color: #4b5563;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+    }
+
+    .filter-group select:focus {
+        outline: none;
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    .alerts-list {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .alert-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 1px solid #e0e7ff;
+        transition: all 0.3s ease;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 1.5rem;
+        align-items: center;
+    }
+
+    .alert-card:hover {
+        transform: translateX(-5px);
+        box-shadow: 0 4px 12px rgba(80, 80, 180, 0.1);
+    }
+
+    .alert-severity {
+        width: 4px;
+        height: 100%;
+        border-radius: 2px;
+        margin-right: -1.5rem;
+    }
+
+    .alert-severity.high {
+        background: #ef4444;
+    }
+
+    .alert-severity.medium {
+        background: #f59e0b;
+    }
+
+    .alert-severity.low {
+        background: #10b981;
+    }
+
+    .alert-content {
+        flex: 1;
+    }
+
+    .alert-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 0.5rem;
+    }
+
+    .alert-title {
+        color: var(--primary-color);
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .alert-time {
+        color: #6b7280;
+        font-size: 0.9rem;
+    }
+
+    .alert-description {
+        color: #4b5563;
+        margin: 0;
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    .alert-meta {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+        font-size: 0.9rem;
+    }
+
+    .alert-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #6b7280;
+    }
+
+    .alert-meta-item i {
+        color: var(--accent-color);
+    }
+
+    .alert-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .alert-action-btn {
+        background: none;
+        border: none;
+        color: #6b7280;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+    }
+
+    .alert-action-btn:hover {
+        background: #f8fafc;
+        color: var(--primary-color);
+    }
+
+    .no-alerts {
+        text-align: center;
+        padding: 3rem;
+        background: #f8fafc;
+        border-radius: 12px;
+        border: 1px dashed #e0e7ff;
+    }
+
+    .no-alerts i {
+        font-size: 3rem;
+        color: #9ca3af;
+        margin-bottom: 1rem;
+    }
+
+    .no-alerts p {
+        color: #6b7280;
+        font-size: 1.1rem;
+        margin: 0;
+    }
+
+    @media (max-width: 768px) {
+        .alerts-container {
+            padding: 1rem;
+        }
+
+        .alerts-filters {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .alert-card {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .alert-severity {
+            display: none;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-6">
+        <h2 class="mb-4">التنبيهات</h2>
+    </div>
+    <div class="col-md-6 text-md-end">
+
+    </div>
+</div>
+
+<div class="alerts-container">
+    <div class="alerts-filters">
+        <div class="filter-group">
+            <label for="filter-severity">مستوى الخطورة</label>
+            <select id="filter-severity">
+                <option value="all">الكل</option>
+                <option value="high">عالية</option>
+                <option value="medium">متوسطة</option>
+                <option value="low">منخفضة</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label for="filter-read">حالة القراءة</label>
+            <select id="filter-read">
+                <option value="all">الكل</option>
+                <option value="read">مقروءة</option>
+                <option value="unread">غير مقروءة</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label for="filter-date">الفترة الزمنية</label>
+            <select id="filter-date">
+                <option value="all">الكل</option>
+                <option value="today">اليوم</option>
+                <option value="week">الأسبوع</option>
+                <option value="month">الشهر</option>
+            </select>
+        </div>
+    </div>
+    <div class="alerts-list">
+        <!-- Alerts will be loaded here dynamically -->
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/alerts_page.js' %}"></script>
+{% endblock %}

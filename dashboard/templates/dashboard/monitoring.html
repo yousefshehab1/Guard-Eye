@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}لوحة التحكم - المراقبة الأمنية{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">المراقبة الأمنية</h4>
+                </div>
+                <div class="card-body">
+                    <!-- حالة المراقبة -->
+                    <div class="alert alert-info" id="monitoring-status">
+                        جاري تحميل حالة المراقبة...
+                    </div>
+
+                    <!-- أزرار التحكم -->
+                    <div class="d-flex justify-content-center gap-3 mb-4">
+                        <button class="btn btn-success" id="start-monitoring">
+                            <i class="fas fa-play"></i> بدء المراقبة
+                        </button>
+                        <button class="btn btn-danger" id="stop-monitoring">
+                            <i class="fas fa-stop"></i> إيقاف المراقبة
+                        </button>
+                    </div>
+
+                    <!-- إعدادات الإشعارات -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">إعدادات الإشعارات</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="notification-settings-form">
+                                <div class="mb-3">
+                                    <label for="telegram-chat-id" class="form-label">معرف محادثة تيليجرام</label>
+                                    <input type="text" class="form-control" id="telegram-chat-id"
+                                        placeholder="أدخل معرف المحادثة">
+                                    <div class="form-text">
+                                        يمكنك الحصول على معرف المحادثة من خلال إرسال رسالة إلى البوت
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> حفظ الإعدادات
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- آخر تهديد -->
+                    <div class="card mt-4" id="last-threat-card" style="display: none;">
+                        <div class="card-header">
+                            <h5 class="mb-0">آخر تهديد تم اكتشافه</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="last-threat-info">
+                                <!-- سيتم ملؤها بواسطة JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // تحديث حالة المراقبة كل 5 ثواني
+        function updateMonitoringStatus() {
+            fetch('/dashboard/monitoring/status/')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const statusDiv = document.getElementById('monitoring-status');
+                        if (data.is_active) {
+                            statusDiv.className = 'alert alert-success';
+                            statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> المراقبة نشطة';
+                        } else {
+                            statusDiv.className = 'alert alert-warning';
+                            statusDiv.innerHTML = '<i class="fas fa-pause-circle"></i> المراقبة متوقفة';
+                        }
+
+                        // تحديث معلومات آخر تهديد
+                        if (data.last_threat) {
+                            const lastThreatCard = document.getElementById('last-threat-card');
+                            const lastThreatInfo = document.getElementById('last-threat-info');
+                            lastThreatCard.style.display = 'block';
+
+                            const threatTime = new Date(data.last_threat_time);
+                            const timeDiff = Math.floor((new Date() - threatTime) / 1000 / 60); // بالدقائق
+
+                            lastThreatInfo.innerHTML = `
+                            <p><strong>نوع التهديد:</strong> ${data.last_threat.type}</p>
+                            <p><strong>مستوى الثقة:</strong> ${(data.last_threat.confidence * 100).toFixed(1)}%</p>
+                            <p><strong>منذ:</strong> ${timeDiff} دقيقة</p>
+                        `;
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('monitoring-status').className = 'alert alert-danger';
+                    document.getElementById('monitoring-status').innerHTML =
+                        '<i class="fas fa-exclamation-circle"></i> خطأ في تحديث الحالة';
+                });
+        }
+
+        // تحديث الحالة كل 5 ثواني
+        setInterval(updateMonitoringStatus, 5000);
+        updateMonitoringStatus();
+
+        // بدء المراقبة
+        document.getElementById('start-monitoring').addEventListener('click', function () {
+            fetch('/dashboard/monitoring/start/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        showAlert('success', data.message);
+                        updateMonitoringStatus();
+                    } else {
+                        showAlert('danger', data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showAlert('danger', 'حدث خطأ في بدء المراقبة');
+                });
+        });
+
+        // إيقاف المراقبة
+        document.getElementById('stop-monitoring').addEventListener('click', function () {
+            fetch('/dashboard/monitoring/stop/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        showAlert('success', data.message);
+                        updateMonitoringStatus();
+                    } else {
+                        showAlert('danger', data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showAlert('danger', 'حدث خطأ في إيقاف المراقبة');
+                });
+        });
+
+        // حفظ إعدادات الإشعارات
+        document.getElementById('notification-settings-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const telegramChatId = document.getElementById('telegram-chat-id').value;
+
+            fetch('/dashboard/monitoring/settings/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    telegram_chat_id: telegramChatId
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        showAlert('success', data.message);
+                    } else {
+                        showAlert('danger', data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showAlert('danger', 'حدث خطأ في حفظ الإعدادات');
+                });
+        });
+
+        // دالة مساعدة لعرض التنبيهات
+        function showAlert(type, message) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+            alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+            document.querySelector('.card-body').insertBefore(alertDiv, document.querySelector('.card-body').firstChild);
+
+            // إزالة التنبيه بعد 5 ثواني
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+
+        // دالة مساعدة للحصول على CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    });
+</script>
+{% endblock %}

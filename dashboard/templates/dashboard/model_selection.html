@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختيار النموذج - نظام المراقبة الأمني</title>
+    <link rel="stylesheet" href="/static/css/model_selection.css">
+</head>
+<body>
+    <div class="model-selection-container">
+        <div class="model-card">
+            <div class="card-header">
+                <h1>اختيار نموذج المراقبة</h1>
+                <p>اختر النموذج المناسب لاحتياجات المراقبة الخاصة بك</p>
+            </div>
+
+            <form id="modelSelectionForm" method="post" action="{% url 'model_selection' %}">
+                {% csrf_token %}
+                <div class="models-list">
+                    <div class="model-item">
+                        <input type="radio" id="thief_mask" name="model" value="thief_mask">
+                        <label for="thief_mask">
+                            <div class="model-info">
+                                <h3>كشف اللصوص والأقنعة</h3>
+                                <p>نموذج متخصص في كشف اللصوص والأشخاص الذين يرتدون أقنعة</p>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="model-item">
+                        <input type="radio" id="weapon" name="model" value="weapon">
+                        <label for="weapon">
+                            <div class="model-info">
+                                <h3>كشف الأسلحة</h3>
+                                <p>نموذج متخصص في كشف المسدسات والسكاكين</p>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="model-item">
+                        <input type="radio" id="violence" name="model" value="violence">
+                        <label for="violence">
+                            <div class="model-info">
+                                <h3>كشف العنف</h3>
+                                <p>نموذج متخصص في كشف سلوكيات العنف</p>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="model-item">
+                        <input type="radio" id="yolo" name="model" value="yolo">
+                        <label for="yolo">
+                            <div class="model-info">
+                                <h3>كشف عام</h3>
+                                <p>نموذج عام لكشف الأشخاص والأشياء</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div id="error-message" class="error-message" style="display: none;">
+                    <p>الرجاء اختيار نموذج</p>
+                </div>
+
+                {% if error %}
+                <div class="error-message">
+                    <p>{{ error }}</p>
+                </div>
+                {% endif %}
+
+                <button type="submit" class="submit-btn">متابعة</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/static/js/model_selection.js"></script>
+</body>
+</html>

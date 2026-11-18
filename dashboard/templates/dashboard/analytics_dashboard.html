@@ -1,0 +1,493 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block title %}لوحة تحليلات النظام{% endblock %}
+
+{% block extra_css %}
+<!-- Google Fonts: Cairo -->
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+<style>
+    body {
+        background: linear-gradient(120deg, #e0e7ff 0%, #f8fafc 100%);
+        font-family: 'Cairo', Arial, sans-serif;
+        min-height: 100vh;
+        position: relative;
+    }
+
+    .bg-wave {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 220px;
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    .analytics-filter-bar {
+        background: rgba(255, 255, 255, 0.92);
+        border-radius: 20px;
+        box-shadow: 0 6px 32px rgba(80, 80, 180, 0.10);
+        padding: 32px 32px 16px 32px;
+        margin-bottom: 36px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        justify-content: space-between;
+        backdrop-filter: blur(3px);
+        border: 1px solid #e0e7ff;
+        position: relative;
+        z-index: 1;
+    }
+
+    .analytics-filter-bar label {
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: #4b2996;
+    }
+
+    .analytics-filter-bar .form-select,
+    .analytics-filter-bar .form-control {
+        min-width: 120px;
+        border-radius: 12px;
+        border: 1.5px solid #c7d2fe;
+        box-shadow: 0 1px 2px rgba(80, 80, 180, 0.04);
+        font-size: 1rem;
+        background: #f8fafc;
+    }
+
+    .analytics-filter-bar .form-select:focus,
+    .analytics-filter-bar .form-control:focus {
+        border-color: #a78bfa;
+        box-shadow: 0 0 0 2px #e0e7ff;
+    }
+
+    .kpi-card {
+        background: linear-gradient(120deg, #fff 60%, #f3e8ff 100%);
+        border-radius: 20px;
+        box-shadow: 0 6px 32px rgba(80, 80, 180, 0.13);
+        padding: 26px 0 18px 0;
+        text-align: center;
+        margin-bottom: 26px;
+        min-height: 130px;
+        transition: box-shadow 0.2s, transform 0.2s;
+        position: relative;
+        overflow: hidden;
+        border: 1.5px solid #e0e7ff;
+    }
+
+    .kpi-card:hover {
+        box-shadow: 0 12px 40px rgba(80, 80, 180, 0.18);
+        transform: translateY(-4px) scale(1.035);
+    }
+
+    .kpi-value {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin: 12px 0 8px 0;
+        color: #4b2996;
+        letter-spacing: 1px;
+    }
+
+    .kpi-label {
+        font-size: 1.12rem;
+        color: #7c3aed;
+        font-weight: 600;
+    }
+
+    .kpi-icon {
+        font-size: 2.7rem;
+        margin-bottom: 8px;
+        display: block;
+        filter: drop-shadow(0 2px 8px #e0e7ff);
+    }
+
+    .kpi-card .kpi-icon.text-primary {
+        color: #6366f1;
+    }
+
+    .kpi-card .kpi-icon.text-danger {
+        color: #f43f5e;
+    }
+
+    .kpi-card .kpi-icon.text-warning {
+        color: #f59e42;
+    }
+
+    .kpi-card .kpi-icon.text-success {
+        color: #10b981;
+    }
+
+    .chart-card {
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 6px 32px rgba(80, 80, 180, 0.10);
+        margin-bottom: 26px;
+        padding: 22px 22px 0 22px;
+        height: 410px;
+        transition: box-shadow 0.2s;
+        border: 1.5px solid #e0e7ff;
+    }
+
+    .chart-card:hover {
+        box-shadow: 0 12px 40px rgba(80, 80, 180, 0.16);
+    }
+
+    .chart-title {
+        font-size: 1.22rem;
+        font-weight: 700;
+        margin-bottom: 12px;
+        color: #4b2996;
+        letter-spacing: 0.5px;
+    }
+
+    .chart-container {
+        position: relative;
+        height: 340px;
+        width: 100%;
+    }
+
+    @media (max-width: 767px) {
+        .analytics-filter-bar {
+            padding: 12px 6px 6px 6px;
+        }
+
+        .chart-card {
+            height: 320px;
+            padding: 8px 4px 0 4px;
+        }
+
+        .chart-container {
+            height: 180px;
+        }
+
+        .kpi-card {
+            min-height: 90px;
+            padding: 10px 0 6px 0;
+        }
+
+        .kpi-value {
+            font-size: 1.3rem;
+        }
+
+        .kpi-icon {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- موجة SVG أعلى الصفحة -->
+<div class="bg-wave">
+    <svg viewBox="0 0 1440 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#a78bfa" fill-opacity="0.18"
+            d="M0,160L60,154.7C120,149,240,139,360,154.7C480,171,600,213,720,197.3C840,181,960,107,1080,85.3C1200,64,1320,96,1380,112L1440,128L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z">
+        </path>
+    </svg>
+</div>
+<div class="container mt-4 position-relative" style="z-index:2;">
+    <!-- شريط التصفية -->
+    <div class="analytics-filter-bar mb-4">
+        <div class="row w-100">
+            <div class="col-md-3 mb-2">
+                <label>الفترة الزمنية:</label>
+                <select class="form-select" id="dateRange">
+                    <option value="all">الكل</option>
+                    <option value="today">اليوم</option>
+                    <option value="last_week">الأسبوع الماضي</option>
+                    <option value="last_month">الشهر الماضي</option>
+                    <option value="custom">يوم مخصص</option>
+                </select>
+            </div>
+            <div class="col-md-3 mb-2" id="customDateDiv" style="display:none;">
+                <label>اختر التاريخ:</label>
+                <input type="date" class="form-control" id="customDate">
+            </div>
+            <div class="col-md-3 mb-2">
+                <label>نوع التهديد:</label>
+                <select class="form-select" id="threatTypeFilter">
+                    <option value="all">الكل</option>
+                </select>
+            </div>
+            <div class="col-md-3 mb-2">
+                <label>مستوى الخطورة:</label>
+                <select class="form-select" id="severityFilter">
+                    <option value="all">الكل</option>
+                    <option value="high">عالية</option>
+                    <option value="medium">متوسطة</option>
+                    <option value="low">منخفضة</option>
+                </select>
+            </div>
+        </div>
+        <div class="d-flex align-items-center mt-3 mt-md-0">
+            <h4 class="mb-0 ms-3" style="font-weight:700;color:#7c3aed;letter-spacing:1px;">تصفية البيانات</h4>
+        </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="row mb-3">
+        <div class="col-md-3 col-6">
+            <div class="kpi-card">
+                <span class="kpi-icon text-primary"><i class="bi bi-bell-fill"></i></span>
+                <div class="kpi-value" id="totalAlerts">0</div>
+                <div class="kpi-label">إجمالي التنبيهات</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="kpi-card">
+                <span class="kpi-icon text-danger"><i class="bi bi-exclamation-triangle-fill"></i></span>
+                <div class="kpi-value" id="highSeverityCount">0</div>
+                <div class="kpi-label">تنبيهات عالية الخطورة</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="kpi-card">
+                <span class="kpi-icon text-warning"><i class="bi bi-exclamation-circle-fill"></i></span>
+                <div class="kpi-value" id="mediumSeverityCount">0</div>
+                <div class="kpi-label">تنبيهات متوسطة الخطورة</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="kpi-card">
+                <span class="kpi-icon text-success"><i class="bi bi-info-circle-fill"></i></span>
+                <div class="kpi-value" id="lowSeverityCount">0</div>
+                <div class="kpi-label">تنبيهات منخفضة الخطورة</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- الرسوم البيانية -->
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <div class="chart-card">
+                <div class="chart-title">التنبيهات حسب الساعة</div>
+                <div class="chart-container">
+                    <canvas id="alertsByHourChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="chart-card">
+                <div class="chart-title">توزيع التنبيهات حسب النوع</div>
+                <div class="chart-container">
+                    <canvas id="threatTypeChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="chart-card">
+                <div class="chart-title">التنبيهات اليومية</div>
+                <div class="chart-container">
+                    <canvas id="dailyAlertsChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="chart-card">
+                <div class="chart-title">توزيع مستويات الخطورة</div>
+                <div class="chart-container">
+                    <canvas id="severityDistributionChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    let charts = {
+        threatType: null,
+        dailyAlerts: null,
+        severityDistribution: null,
+        alertsByHour: null
+    };
+
+    // أنواع التهديد بالإنجليزي مع الترجمة
+    const THREAT_TYPE_MAP = {
+        'thief': 'لص',
+        'thief_mask': 'لص مقنع',
+        'fire': 'حريق',
+        'violence': 'عنف',
+        'weapon': 'سلاح',
+    };
+
+    function updateThreatTypes(types) {
+        const select = document.getElementById('threatTypeFilter');
+        select.innerHTML = '<option value="all">الكل</option>';
+        // Filter and add only the allowed types
+        const allowedThreats = Object.keys(THREAT_TYPE_MAP); // Get keys from our updated map
+        types.forEach(type => {
+            if (allowedThreats.includes(type.value)) {
+                // القيمة هي value (بالإنجليزي)، النص هو الترجمة
+                select.innerHTML += `<option value="${type.value}">${THREAT_TYPE_MAP[type.value]}</option>`;
+            }
+        });
+    }
+
+    function updateCharts(data) {
+        document.getElementById('totalAlerts').textContent = data.total_alerts || 0;
+        document.getElementById('highSeverityCount').textContent = data.high_severity_count || 0;
+        document.getElementById('mediumSeverityCount').textContent = data.medium_severity_count || 0;
+        document.getElementById('lowSeverityCount').textContent = data.low_severity_count || 0;
+
+        // حسب الساعة
+        if (charts.alertsByHour) charts.alertsByHour.destroy();
+        const hourCtx = document.getElementById('alertsByHourChart').getContext('2d');
+        charts.alertsByHour = new Chart(hourCtx, {
+            type: 'bar',
+            data: {
+                labels: data.alerts_by_hour.map(item => `${item.hour}`),
+                datasets: [{
+                    label: 'التنبيهات',
+                    data: data.alerts_by_hour.map(item => item.count),
+                    backgroundColor: 'rgba(124, 58, 237, 0.30)',
+                    borderColor: '#7c3aed',
+                    borderWidth: 2,
+                    borderRadius: 7
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+            }
+        });
+
+        // حسب النوع
+        if (charts.threatType) charts.threatType.destroy();
+        const threatCtx = document.getElementById('threatTypeChart').getContext('2d');
+        charts.threatType = new Chart(threatCtx, {
+            type: 'bar',
+            data: {
+                labels: data.threat_counts.map(item => item.category),
+                datasets: [{
+                    label: 'عدد التنبيهات',
+                    data: data.threat_counts.map(item => item.count),
+                    backgroundColor: 'rgba(16, 185, 129, 0.30)',
+                    borderColor: '#10b981',
+                    borderWidth: 2,
+                    borderRadius: 7
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+            }
+        });
+
+        // اليومية
+        if (charts.dailyAlerts) charts.dailyAlerts.destroy();
+        const dailyCtx = document.getElementById('dailyAlertsChart').getContext('2d');
+        charts.dailyAlerts = new Chart(dailyCtx, {
+            type: 'line',
+            data: {
+                labels: data.daily_alerts.map(item => item.day),
+                datasets: [{
+                    label: 'عدد التنبيهات',
+                    data: data.daily_alerts.map(item => item.count),
+                    borderColor: '#f43f5e',
+                    backgroundColor: 'rgba(244, 63, 94, 0.10)',
+                    tension: 0.35,
+                    pointRadius: 5,
+                    pointBackgroundColor: '#f43f5e',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+            }
+        });
+
+        // توزيع الخطورة
+        if (charts.severityDistribution) charts.severityDistribution.destroy();
+        const severityCtx = document.getElementById('severityDistributionChart').getContext('2d');
+        charts.severityDistribution = new Chart(severityCtx, {
+            type: 'doughnut',
+            data: {
+                labels: data.severity_distribution.map(item => item.severity),
+                datasets: [{
+                    data: data.severity_distribution.map(item => item.count),
+                    backgroundColor: [
+                        '#10b981', // منخفضة
+                        '#f59e42', // متوسطة
+                        '#f43f5e'  // عالية
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: {
+                            font: { family: 'Cairo', size: 15 },
+                            color: '#4b2996'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function fetchThreatTypes() {
+        fetch('{% url "dashboard:analytics_data" %}?only_types=1')
+            .then(response => response.json())
+            .then(data => {
+                if (data.threat_types) {
+                    updateThreatTypes(data.threat_types);
+                }
+            });
+    }
+
+    function fetchData() {
+        const dateRange = document.getElementById('dateRange').value;
+        const customDate = document.getElementById('customDate').value;
+        const threatType = document.getElementById('threatTypeFilter').value;
+        let severity = document.getElementById('severityFilter').value;
+        // القيم الفعلية لمستوى الخطورة
+        if (severity === 'high' || severity === 'medium' || severity === 'low' || severity === 'all') {
+            // لا تغيير
+        } else {
+            severity = 'all';
+        }
+        let url = `{% url "dashboard:analytics_data" %}?date_range=${dateRange}&threat_type=${threatType}&severity=${severity}`;
+        if (dateRange === 'custom' && customDate) {
+            url += `&custom_date=${customDate}`;
+        }
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                updateCharts(data);
+            })
+            .catch(error => {
+                console.error('Error fetching analytics data:', error);
+            });
+    }
+
+    document.getElementById('dateRange').addEventListener('change', function () {
+        if (this.value === 'custom') {
+            document.getElementById('customDateDiv').style.display = '';
+        } else {
+            document.getElementById('customDateDiv').style.display = 'none';
+        }
+        fetchData();
+    });
+    document.getElementById('customDate').addEventListener('change', fetchData);
+    document.getElementById('threatTypeFilter').addEventListener('change', fetchData);
+    document.getElementById('severityFilter').addEventListener('change', fetchData);
+
+    fetchThreatTypes();
+    fetchData();
+    setInterval(fetchData, 30000);
+</script>
+{% endblock %}

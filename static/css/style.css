@@ -1,0 +1,325 @@
+/* تنسيقات عامة */
+body {
+    font-family: 'Cairo', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+    color: #333333;
+}
+
+/* متغيرات الألوان */
+:root {
+    --primary-blue: #007bff;
+    --dark-bg: #f5f5f5;
+    --text-color: #333333;
+    --border-color: #dddddd;
+}
+
+/* تنسيقات للهيدر الرئيسي */
+.main-header {
+    background-color: var(--primary-blue);
+    color: white;
+    padding: 1rem 0;
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.main-nav ul {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.main-nav li {
+    margin-left: 1.5rem;
+}
+
+.main-nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.main-nav a.active,
+.main-nav a:hover {
+    color: #f0f0f0;
+    text-decoration: underline;
+}
+
+.logout-section button {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.logout-section button:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* تنسيقات للمحتوى الرئيسي */
+.main-content {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.container {
+    width: 100%;
+}
+
+h2 {
+    color: var(--primary-blue);
+    margin-bottom: 1.5rem;
+}
+
+/* تنسيقات الكاميرات */
+.cameras-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.camera-item {
+    background-color: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.camera-name {
+    font-size: 1.2rem;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+}
+
+.camera-feed {
+    width: 100%;
+    height: 200px;
+    background-color: #f8f9fa;
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.camera-feed img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.camera-offline {
+    color: #666;
+    text-align: center;
+}
+
+.camera-toggle {
+    padding: 5px 15px;
+    background-color: var(--primary-blue);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    width: 100%;
+}
+
+.camera-toggle:hover {
+    background-color: #0056b3;
+}
+
+/* تنسيقات التنبيهات */
+.alerts-section {
+    margin-top: 2rem;
+}
+
+.alerts-title {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--primary-blue);
+}
+
+.alerts-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.alert-item {
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+    background-color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.alert-description {
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+.alert-time {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.no-alerts {
+    text-align: center;
+    color: #666;
+    padding: 1rem;
+    background-color: white;
+    border-radius: 4px;
+    border: 1px dashed var(--border-color);
+}
+
+/* تنسيقات إعدادات الإشعارات */
+.settings-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+}
+
+.input-group {
+    margin-top: 0.5rem;
+    margin-right: 1.5rem;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+.save-button {
+    background-color: var(--primary-blue);
+    color: white;
+    border: none;
+    padding: 0.7rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.save-button:hover {
+    background-color: #0056b3;
+}
+
+/* تنسيقات صفحة تسجيل الدخول */
+.login-container {
+    background: rgba(50, 50, 70, 0.95);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+    color: white;
+}
+
+.login-container h1 {
+    margin-bottom: 1rem;
+    color: #ff8c00;
+    font-size: 2rem;
+}
+
+.login-container input {
+    margin-bottom: 1rem;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.9);
+    color: #000000;
+}
+
+.login-container button {
+    background-color: #ff6347;
+    color: white;
+    border: none;
+    padding: 0.8rem;
+    border-radius: 4px;
+    width: 100%;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.login-container button:hover {
+    background-color: #e53e3e;
+    transform: translateY(-2px);
+}
+
+.error {
+    color: #ff4d4d;
+    margin-top: 1rem;
+}
+
+/* تنسيقات للشاشات الصغيرة */
+@media (max-width: 768px) {
+    .header-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .main-nav ul {
+        flex-direction: column;
+        margin-top: 1rem;
+    }
+    
+    .main-nav li {
+        margin-right: 0;
+        margin-bottom: 0.5rem;
+    }
+    
+    .logout-section {
+        margin-top: 1rem;
+        align-self: flex-start;
+    }
+    
+    .cameras-container {
+        grid-template-columns: 1fr;
+    }
+}

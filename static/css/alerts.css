@@ -1,0 +1,154 @@
+/* تنسيق صفحة التنبيهات */
+.alerts-container {
+  width: 100%;
+}
+
+.alerts-filters {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  background-color: var(--card-bg);
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.filter-group label {
+  font-size: 0.9rem;
+  color: var(--muted-text);
+}
+
+.filter-group select {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--light-text);
+  font-size: 0.9rem;
+}
+
+.alerts-list-full {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1rem;
+}
+
+.alert-card {
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.alert-card.unread {
+  border-right: 3px solid var(--primary-color);
+}
+
+.alert-card.read {
+  opacity: 0.7;
+}
+
+.alert-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.alert-header h3 {
+  font-size: 1.1rem;
+  color: var(--light-text);
+}
+
+.alert-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.mark-read-btn {
+  background: transparent;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--light-text);
+  transition: all 0.3s ease;
+}
+
+.mark-read-btn:hover {
+  background-color: rgba(74, 222, 128, 0.2);
+  color: var(--success-color);
+}
+
+.alert-content {
+  padding: 1rem;
+}
+
+.alert-content p {
+  margin-bottom: 1rem;
+  color: var(--light-text);
+  font-size: 0.95rem;
+}
+
+.alert-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+}
+
+.alert-severity {
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.alert-severity.high {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: var(--danger-color);
+}
+
+.alert-severity.medium {
+  background-color: rgba(245, 158, 11, 0.2);
+  color: var(--warning-color);
+}
+
+.alert-severity.low {
+  background-color: rgba(74, 222, 128, 0.2);
+  color: var(--success-color);
+}
+
+.alert-time {
+  color: var(--muted-text);
+}
+
+.no-alerts {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem;
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  color: var(--muted-text);
+}
+
+@media (max-width: 768px) {
+  .alerts-filters {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .alerts-list-full {
+    grid-template-columns: 1fr;
+  }
+} 

@@ -1,0 +1,179 @@
+<!-- قسم إعدادات الإشعارات -->
+<div class="settings-section">
+    <h3>إعدادات الإشعارات</h3>
+    <form id="notificationSettingsForm" class="settings-form">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <h4>نوع الكشف</h4>
+            <select name="selected_model" class="form-control">
+                <option value="thief_mask" {% if settings.selected_model == 'thief_mask' %}selected{% endif %}>كشف اللصوص والأقنعة</option>
+                <option value="weapon" {% if settings.selected_model == 'weapon' %}selected{% endif %}>كشف الأسلحة</option>
+                <option value="violence" {% if settings.selected_model == 'violence' %}selected{% endif %}>كشف العنف</option>
+                <option value="yolo" {% if settings.selected_model == 'yolo' %}selected{% endif %}>كشف عام</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <h4>قنوات الإشعارات</h4>
+            <div class="checkbox-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" name="email_notifications" {% if settings.email_notifications %}checked{% endif %}>
+                    <span>البريد الإلكتروني</span>
+                </label>
+                
+                <label class="checkbox-label">
+                    <input type="checkbox" name="telegram_notifications" {% if settings.telegram_notifications %}checked{% endif %}>
+                    <span>تيليجرام</span>
+                </label>
+
+                <label class="checkbox-label">
+                    <input type="checkbox" name="whatsapp_notifications" {% if settings.whatsapp_notifications %}checked{% endif %}>
+                    <span>واتساب</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <h4>معلومات الاتصال</h4>
+            <div class="contact-info">
+                <div class="input-group">
+                    <label>معرف تيليجرام</label>
+                    <input type="text" name="telegram_chat_id" value="{{ settings.telegram_chat_id }}" placeholder="مثال: 123456789">
+                </div>
+
+                <div class="input-group">
+                    <label>رقم الواتساب</label>
+                    <input type="text" name="whatsapp_number" value="{{ settings.whatsapp_number }}" placeholder="مثال: +966501234567">
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="save-btn">حفظ الإعدادات</button>
+    </form>
+</div>
+
+<style>
+.settings-section {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1rem;
+}
+
+.settings-form {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group h4 {
+    margin-bottom: 1rem;
+    color: var(--light-text);
+}
+
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+}
+
+.contact-info {
+    display: grid;
+    gap: 1rem;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.input-group label {
+    color: var(--light-text);
+}
+
+.input-group input {
+    padding: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--light-text);
+}
+
+.save-btn {
+    background-color: var(--primary-blue);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 0.8rem 1.5rem;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.save-btn:hover {
+    background-color: #0056b3;
+}
+
+select.form-control {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--light-text);
+}
+</style>
+
+<script>
+document.getElementById('notificationSettingsForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const data = {
+        selected_model: formData.get('selected_model'),
+        email_notifications: formData.get('email_notifications') === 'on',
+        telegram_notifications: formData.get('telegram_notifications') === 'on',
+        whatsapp_notifications: formData.get('whatsapp_notifications') === 'on',
+        telegram_chat_id: formData.get('telegram_chat_id'),
+        whatsapp_number: formData.get('whatsapp_number')
+    };
+
+    fetch('/update_notification_settings/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert('تم حفظ الإعدادات بنجاح');
+        } else {
+            alert('حدث خطأ أثناء حفظ الإعدادات');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('حدث خطأ أثناء حفظ الإعدادات');
+    });
+});
+</script> 

@@ -1,0 +1,227 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">مراقبة الكاميرا</h5>
+                    <div class="card-tools">
+                        <button id="fullscreenBtn" class="btn btn-primary">
+                            <i class="fas fa-expand"></i> ملء الشاشة
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="videoContainer" class="position-relative">
+                        <img id="videoFeed" src="/video-feed/" class="img-fluid" alt="بث الكاميرا">
+                        <div id="loadingOverlay"
+                            class="position-absolute top-50 start-50 translate-middle text-center d-none">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">جاري التحميل...</span>
+                            </div>
+                            <p class="mt-2">جاري تحميل البث...</p>
+                        </div>
+                        <div id="errorOverlay"
+                            class="position-absolute top-50 start-50 translate-middle text-center d-none">
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <p class="mt-2">حدث خطأ في تحميل البث</p>
+                                <button class="btn btn-primary mt-2" onclick="reloadStream()">إعادة المحاولة</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const videoContainer = document.getElementById('videoContainer');
+        const videoFeed = document.getElementById('videoFeed');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const errorOverlay = document.getElementById('errorOverlay');
+        let retryCount = 0;
+        const maxRetries = 3;
+        const retryDelay = 2000; // 2 seconds
+
+        // دالة لتفعيل وضع ملء الشاشة
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                if (videoContainer.requestFullscreen) {
+                    videoContainer.requestFullscreen();
+                } else if (videoContainer.webkitRequestFullscreen) {
+                    videoContainer.webkitRequestFullscreen();
+                } else if (videoContainer.msRequestFullscreen) {
+                    videoContainer.msRequestFullscreen();
+                }
+                fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i> خروج من ملء الشاشة';
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+                fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i> ملء الشاشة';
+            }
+        }
+
+        // إضافة مستمع الحدث لزر ملء الشاشة
+        fullscreenBtn.addEventListener('click', toggleFullscreen);
+
+        // مراقبة تغييرات حالة ملء الشاشة
+        document.addEventListener('fullscreenchange', updateFullscreenButton);
+        document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
+        document.addEventListener('msfullscreenchange', updateFullscreenButton);
+
+        function updateFullscreenButton() {
+            if (document.fullscreenElement) {
+                fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i> خروج من ملء الشاشة';
+            } else {
+                fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i> ملء الشاشة';
+            }
+        }
+
+        // دالة لإعادة تحميل البث
+        function reloadStream() {
+            if (retryCount >= maxRetries) {
+                errorOverlay.querySelector('.alert').innerHTML = `
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p class="mt-2">فشل الاتصال بالكاميرا بعد عدة محاولات</p>
+                    <p class="text-muted">يرجى التحقق من اتصال الكاميرا وإعادة تحميل الصفحة</p>
+                    <button class="btn btn-primary mt-2" onclick="window.location.reload()">إعادة تحميل الصفحة</button>
+                `;
+                return;
+            }
+
+            loadingOverlay.classList.remove('d-none');
+            errorOverlay.classList.add('d-none');
+
+            const timestamp = new Date().getTime();
+            videoFeed.src = `{% url 'video_feed' camera.id %}?t=${timestamp}`;
+
+            retryCount++;
+        }
+
+        // معالجة أخطاء تحميل الصورة
+        videoFeed.onerror = function () {
+            loadingOverlay.classList.add('d-none');
+            errorOverlay.classList.remove('d-none');
+
+            if (retryCount < maxRetries) {
+                setTimeout(reloadStream, retryDelay);
+            } else {
+                errorOverlay.querySelector('.alert').innerHTML = `
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p class="mt-2">فشل الاتصال بالكاميرا بعد عدة محاولات</p>
+                    <p class="text-muted">يرجى التحقق من اتصال الكاميرا وإعادة تحميل الصفحة</p>
+                    <button class="btn btn-primary mt-2" onclick="window.location.reload()">إعادة تحميل الصفحة</button>
+                `;
+            }
+        };
+
+        // معالجة نجاح تحميل الصورة
+        videoFeed.onload = function () {
+            loadingOverlay.classList.add('d-none');
+            errorOverlay.classList.add('d-none');
+            retryCount = 0; // إعادة تعيين عداد المحاولات عند النجاح
+        };
+
+        // إعادة تحميل البث كل 30 ثانية لتجنب انقطاع الاتصال
+        setInterval(function () {
+            if (!errorOverlay.classList.contains('d-none')) {
+                reloadStream();
+            }
+        }, 30000);
+
+        // إضافة معالج للخطأ العام
+        window.onerror = function (msg, url, lineNo, columnNo, error) {
+            console.error('Error: ' + msg + '\nURL: ' + url + '\nLine: ' + lineNo + '\nColumn: ' + columnNo + '\nError object: ' + JSON.stringify(error));
+            return false;
+        };
+    });
+</script>
+
+<style>
+    #videoContainer {
+        width: 100%;
+        height: 0;
+        padding-bottom: 56.25%;
+        /* نسبة 16:9 */
+        position: relative;
+        background: #000;
+        overflow: hidden;
+    }
+
+    #videoFeed {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+
+    #loadingOverlay,
+    #errorOverlay {
+        background: rgba(0, 0, 0, 0.7);
+        width: 100%;
+        height: 100%;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .card-tools {
+        position: absolute;
+        right: 1rem;
+        top: 1rem;
+        z-index: 100;
+    }
+
+    #fullscreenBtn {
+        background: rgba(0, 0, 0, 0.5);
+        border: none;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+    }
+
+    #fullscreenBtn:hover {
+        background: rgba(0, 0, 0, 0.8);
+        transform: scale(1.05);
+    }
+
+    :fullscreen #videoContainer {
+        padding-bottom: 100vh;
+    }
+
+    :fullscreen #videoFeed {
+        object-fit: contain;
+    }
+
+    .alert {
+        max-width: 80%;
+        margin: 0 auto;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.95);
+    }
+
+    .spinner-border {
+        width: 3rem;
+        height: 3rem;
+    }
+</style>
+{% endblock %}
